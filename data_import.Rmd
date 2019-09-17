@@ -1,0 +1,28 @@
+---
+title: "Data Import"
+author: "Jana Lee"
+date: "9/17/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## Load in a dataset
+
+```{r}
+litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv")
+litters_data = janitor::clean_names(litters_data)
+```
+
+## Learning Assessment 1, load in pups data
+```{r}
+pups_data = read_csv(file = "./data_import_examples/FAS_pups.csv")
+pups_data = janitor::clean_names(pups_data)
+```
+
+
+
