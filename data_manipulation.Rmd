@@ -1,0 +1,100 @@
+---
+title: "Data Manipulation"
+author: "Jana Lee"
+date: "9/19/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## Import datasets litters & pups
+
+```{r, import}
+litters_data = read_csv("./data_import_examples/FAS_litters.csv")
+litters_data = janitor::clean_names(litters_data)
+
+pups_data = read_csv( "./data_import_examples/FAS_pups.csv")
+pups_data = janitor::clean_names(pups_data)
+```
+
+## Select
+Use when you only need a subset of the columns in the data.
+Extract only what you need can de-cluter the data. This is strictly for column
+names.
+```{r}
+select(litters_data, group, litter_number)
+
+select(litters_data, group, litter_number, gd0_weight)
+
+select(litters_data, group, litter_number, gd0_weight, everything())
+
+select(litters_data, -group)
+
+select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+
+# Renamed group function
+select(litters_data, GROUP = group, litter_number)
+
+# renaming the variables that we have 
+rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+
+```
+
+## Filtering !!!
+Filtering for the Con7 group. You can check this by looking at the tiblble -> 
+7*8
+```{r, filter}
+filter(litters_data, group == "Mod8")
+# double = tries to see if those values are equal to each other.
+
+filter(litters_data, gd_of_birth == 20)
+
+filter(litters_data, gd_of_birth < 20)
+
+filter(litters_data, gd_of_birth >= 20)
+
+#first we want to filter by pups_born_alive, then we want Con7.
+filter(litters_data, pups_born_alive < 6, group == "Con7")
+
+# can put ! before any data statement. It mean NOT something. so opposite of what we might want
+
+# group %in% c("Con7", "Con8") --> can filter for everything in between
+
+# how to do OR statement?
+filter(litters_data, group %in% c("Con7", "Mod8"))
+
+# DON'T DO THIS:
+# filter(litters_data, is.na(gd0_weight))
+
+# This one is better. Drop_Na is better
+drop_na(litters_data, gd0_weight)
+
+```
+
+## Mutate
+Changing them or creating new ones with mutate.
+```{r}
+mutate(litters_data,
+  wt_gain = gd18_weight - gd0_weight,
+  group = str_to_lower(group)
+)
+```
+
+## Arrange
+Maybe, I want this to be in some order that it's not currently in.
+```{r}
+arrange(litters_data, pups_born_alive)
+
+# This will arrange pup born alive and then weight
+arrange(litters_data, pups_born_alive, gd0_weight)
+
+```
+
+
+
+
+
