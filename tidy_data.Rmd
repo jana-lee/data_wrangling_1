@@ -64,3 +64,57 @@ pivot_wider(
 )
 ```
 
+What happens when we have data spread across multiple tables?
+```{r}
+fellowship_data = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "B3:D6") %>%
+  mutate(movie = "fellowship_ring")
+
+two_towers = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "F3:H6") %>%
+  mutate(movie = "two_towers")
+
+return_king = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "J3:L6") %>%
+  mutate(movie = "return_king")
+```
+
+## bind_rows
+```{r}
+lotr_tidy = 
+  bind_rows(fellowship_data, two_towers, return_king) %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    female:male,
+    names_to = "sex", 
+    values_to = "words") %>%
+  mutate(race = str_to_lower(race)) %>% 
+  select(movie, everything()) 
+```
+
+
+## Joining datasets
+Adding the pup_data and litter_data first. Then, making fas_data (new dataset) to join the pups data together. 
+```{r}
+pup_data = 
+  read_csv("./data_import_examples/FAS_pups.csv", col_types = "ciiiii") %>%
+  janitor::clean_names() %>%
+  mutate(sex = recode(sex, `1` = "male", `2` = "female")) 
+
+litter_data = 
+  read_csv("./data_import_examples/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group))
+
+# We are specifying that we start with pup_data first and then add the litter_data)
+# if you don't tell the left_join function with by, it might get you into trouble. It is smart and tries to join by itself
+fas_data =
+  left_join(pup_data, litter_data, by = "litter_number")
+
+# Joining by multiple: ... by = c(...)
+
+```
+
