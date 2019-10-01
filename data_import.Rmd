@@ -108,7 +108,6 @@ mlb11_data_subset =
 
 write_csv(mlb11_data_subset, path = "./data_import_examples/mlb_subset.csv")
 # Use the write function
-
 ```
 
 
