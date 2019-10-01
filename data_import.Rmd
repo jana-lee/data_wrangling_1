@@ -12,10 +12,11 @@ library(tidyverse)
 ```
 
 ## Load in a dataset for from FAS_litters
-
+Always import the relative path. Never the absolute path!
 ```{r}
 litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv")
 litters_data = janitor::clean_names(litters_data)
+# Janitor::clean_names: Will take whatever the column name is and convert this to lower snake case.
 ```
 
 ## Learning Assessment 1, load in pups data
@@ -23,6 +24,25 @@ litters_data = janitor::clean_names(litters_data)
 pups_data = read_csv(file = "./data_import_examples/FAS_pups.csv")
 pups_data = janitor::clean_names(pups_data)
 ```
+
+```{r}
+tail(litters_data, 5)
+#Returns the last parts of a vector, matrix table, data frame, or function. Use head, str, tail.
+
+skimr::skim(litters_data)
+#Skimr is another way to look through the data.
+
+view(litters_data)
+# This will open a new tab for us to view the data.
+```
+
+## Arguments in the read statement
+If data is clean, you can use col_names = true
+```{r}
+litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv",
+  skip = 10, col_names = FALSE)
+```
+
 
 ##parsing columns - back ticks show that the column name is NOT in a standard format. It's a warning to the code!
 ```{r}
@@ -41,6 +61,10 @@ col_types = cols(
 ```
 
 ## Learning assessment 2, parsing example
+```{r}
+pups_data = read_csv("./data_import_examples/FAS_pups.csv", col_types = "ciiiii")
+skimr::skim(pups_data)
+```
 
 
 ## Read in an Excel file...
@@ -55,15 +79,36 @@ mlb11_data = read_excel(path = "./data_import_examples/mlb11.xlsx")
 pulse_data = haven::read_sas("./data_import_examples/public_pulse_data.sas7bdat")
 ```
 
+## Learning Assessment 3, Importing
+```{r}
+pups_base = read.csv("./data_import_examples/FAS_pups.csv")
+
+pups_readr = read_csv("./data_import_examples/FAS_pups.csv")
+
+pups_base
+
+pups_readr
+
+# read_csv produces tibbles which are similar to the base R data frames produced by read. csv
+
+```
+
+
 ## Exporting data
 ```{r}
-mlb11_data_subset =
-    read_excel(
-      path = "./data_import_examples/m1b11.xlsx",
-      range = "A1:D7")
+library(readxl)
+mlb11_data = read_excel(path = "./data_import_examples/mlb11.xlsx")
+# Load in the dataset
 
-write_csv(mlb11_data_subset, path = "./data/mlb_data_subset.xlsx"
-)
+mlb11_data_subset = 
+  read_excel(
+    path = "./data_import_examples/mlb11.xlsx",
+    range = "A1:D7")
+# Make a new sub dataset.
+
+write_csv(mlb11_data_subset, path = "./data_import_examples/mlb_subset.csv")
+# Use the write function
+
 ```
 
 
