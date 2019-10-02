@@ -3,13 +3,18 @@ Tidy\_Data
 Jana Lee
 9/24/2019
 
-## Wide to long
+## Importing data
 
 ``` r
 pulse_data =
   haven::read_sas("./data_import_examples/public_pulse_data.sas7bdat") %>%
   janitor::clean_names()
 ```
+
+## pivot\_longer
+
+pivot\_longer lengthens data, increasing the number of rows and
+decreasing the number of columns. Inverse is pivot\_wider.
 
 BDI score is spread across 4 columns, corresponding to 4 observation
 times. We can fix the problem with pivot\_longer.
@@ -28,7 +33,8 @@ pulse_tidy_data =
 ) %>%
   mutate(
     visit = recode(visit, "bl" = "00m"),
-  )
+    visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) %>%
+  arrange(id, visit)
 ```
 
 ## separate in litters
@@ -44,7 +50,36 @@ litters_data =
   arrange(litter_number)
 ```
 
+## Learning Assessment, pivot\_longer
+
+``` r
+litters_data %>% 
+  select(litter_number, ends_with("weight")) %>% 
+   pivot_longer(
+    gd0_weight:gd18_weight,
+    names_to = "gd", 
+    values_to = "weight") %>% 
+  mutate(gd = recode(gd, "gd0_weight" = 0, "gd18_weight" = 18))
+```
+
+    ## # A tibble: 98 x 3
+    ##   litter_number      gd weight
+    ##   <chr>           <dbl>  <dbl>
+    ## 1 #1/2/95/2           0     27
+    ## 2 #1/2/95/2          18     42
+    ## 3 #1/5/3/83/3-3/2     0     NA
+    ## 4 #1/5/3/83/3-3/2    18     NA
+    ## 5 #1/6/2/2/95-2       0     NA
+    ## # … with 93 more rows
+
+``` r
+# This is tidy because we have a variable for day and a variable for weight rather than using values in the variable names.
+```
+
 ## pivot\_wider
+
+pivot\_wider widens data, increasing the number of columns and
+decreasing the number of rows.
 
 Deliberately untidying this
 
@@ -67,6 +102,11 @@ pivot_wider(
     ##   <chr>     <dbl> <dbl>
     ## 1 treatment   4       8
     ## 2 placebo     3.5     4
+
+## Binding rows
+
+Efficient implementation of the common pattern of do.call or do.call for
+binding many data frames into one.
 
 What happens when we have data spread across multiple tables?
 
@@ -124,3 +164,17 @@ fas_data =
 
 # Joining by multiple: ... by = c(...)
 ```
+
+# Learning Assessment
+
+``` r
+surv_os = read_csv("./survey_results/surv_os.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(id = what_is_your_uni, os = what_operating_system_do_you_use)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   `What is your UNI?` = col_character(),
+    ##   `What operating system do you use?` = col_character()
+    ## )
